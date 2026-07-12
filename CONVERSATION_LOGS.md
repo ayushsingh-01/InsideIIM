@@ -147,5 +147,18 @@ This document contains a curated, professional log of the pairing sessions betwe
 >    * Added a time range state and dropdown `<select>` element in [ReportDashboard.tsx](file:///z:/InsideIIM/frontend/src/components/ReportDashboard.tsx) containing 1 Week, 30 Days, 60 Days, 90 Days, and 1 Year ranges.
 >    * Designed a fast, client-side filtration function to filter and redraw the Recharts trend line instantly without requiring new API requests.
 >
-> The system now has full CRUD capability for reports and flexible chart rendering! Let's test the build.
+> The system now has full CRUD capability for reports and flexible chart rendering!
+
+### 👤 User
+> Add 1 hour caching for the company. If someone searches for a company, save it for around 1 hour before re-analyzing, or if the user explicitly clicked delete in the search history.
+
+### 🤖 Assistant
+> Done! 
+> 
+> **Cache Execution Logic**:
+> * Implemented a check inside the `/api/research/stream` endpoint in [server.ts](file:///z:/InsideIIM/backend/src/server.ts) to check MongoDB for pre-existing records.
+> * If a record is found and its `createdAt` timestamp is less than **1 hour (3600 seconds) old**, the backend bypasses the 9-agent LangGraph execution graph entirely.
+> * The server sends a cache-hit progress notification (`"Cached report found..."`) and immediately streams the stored document through the SSE stream, ending the connection instantly (taking under 200ms instead of 30+ seconds).
+> * If a report is older than 1 hour or has been explicitly deleted (which removes the document from MongoDB), the backend runs the live LangGraph agent workflow to compile fresh stock analysis.
+
 

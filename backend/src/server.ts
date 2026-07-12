@@ -98,6 +98,26 @@ app.get('/api/research/stream', async (req, res) => {
   };
 
   try {
+    // 1-Hour Cache Check
+    if (isDbConnected) {
+      const cachedReport = await Research.findOne({ ticker: tickerUpper });
+      if (cachedReport && cachedReport.createdAt) {
+        const ageMs = Date.now() - new Date(cachedReport.createdAt).getTime();
+        const oneHourMs = 60 * 60 * 1000;
+        
+        if (ageMs < oneHourMs) {
+          console.log(`Serving cached report for ${tickerUpper} (${Math.round(ageMs / 1000 / 60)} minutes old)`);
+          sendSSE({
+            type: "progress",
+            agent: "cache",
+            message: "Cached report found (less than 1 hour old). Serving cached analysis..."
+          });
+          sendSSE({ type: "done", data: cachedReport });
+          return res.end();
+        }
+      }
+    }
+
     const initialState = { ticker: tickerUpper, messages: [] };
     const eventStream = await researchGraph.stream(initialState);
 
