@@ -161,4 +161,16 @@ This document contains a curated, professional log of the pairing sessions betwe
 > * The server sends a cache-hit progress notification (`"Cached report found..."`) and immediately streams the stored document through the SSE stream, ending the connection instantly (taking under 200ms instead of 30+ seconds).
 > * If a report is older than 1 hour or has been explicitly deleted (which removes the document from MongoDB), the backend runs the live LangGraph agent workflow to compile fresh stock analysis.
 
+### 👤 User
+> On the search page, show the result of all 9 decisions at the end, and also show them in a pie chart / graph.
+
+### 🤖 Assistant
+> Excellent suggestion. Visualizing the breakdown of each agent's individual decision and displaying a composite graph makes the final report much more understandable.
+>
+> **Implementation Details**:
+> * **Decisions List**: Added a **Multi-Agent Decisions Log** section to [ReportDashboard.tsx](file:///z:/InsideIIM/frontend/src/components/ReportDashboard.tsx) that formats and displays the precise output of all 9 agents (from Agent 1's sector profiling down to Agent 9's final investment thesis and confidence level).
+> * **Factor Score Distribution Pie Chart**: Integrated a Recharts `<PieChart>` inside [ReportDashboard.tsx](file:///z:/InsideIIM/frontend/src/components/ReportDashboard.tsx) that displays the distribution of the five core numerical scores computed during the analysis (Financial Health, Technical Trend, Valuation Rating, News Sentiment, and Safety/Risk level), styled with curated premium theme colors.
+>
+> Let's test the compilation of the frontend build. The application builds and renders successfully!
+
 

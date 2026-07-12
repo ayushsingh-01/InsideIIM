@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Badge } from './ui/badge';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Legend } from 'recharts';
 import { FinalDecision, FinancialAnalysis, MarketData, NewsAnalysis, RiskAnalysis, TechnicalAnalysis, ValuationAnalysis, CompanyResearch, MacroAnalysis } from '../types/graph';
 import { Activity, AlertTriangle, TrendingUp, Newspaper, DollarSign, Building, BarChart2 } from 'lucide-react';
 
@@ -26,6 +26,15 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
   if (!data.finalDecision) return null;
 
   const [timeframe, setTimeframe] = React.useState<'7d' | '30d' | '60d' | '90d' | '1y'>('30d');
+
+  const pieData = [
+    { name: 'Financial Health', value: Math.round(data.financialAnalysis?.financialScore || 0) },
+    { name: 'Technical Trend', value: Math.round(data.technicalAnalysis?.technicalScore || 0) },
+    { name: 'Valuation', value: Math.round(data.valuationAnalysis?.valuationScore || 0) },
+    { name: 'Sentiment', value: Math.round(data.newsAnalysis?.sentimentScore || 0) },
+    { name: 'Safety Level', value: Math.round(100 - (data.riskAnalysis?.overallRiskScore || 0)) },
+  ];
+  const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
 
   const getFilteredPrices = () => {
     const prices = data.marketData?.historicalPrices || [];
@@ -165,6 +174,84 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
                 {data.finalDecision.swotAnalysis.threats.map((s, i) => <li key={i}>{s}</li>)}
               </ul>
             </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 9 Agents Decisions & Graph Breakdown */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Decisions List Card */}
+        <Card className="bg-black/40 backdrop-blur-md border-white/10">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><Activity className="w-5 h-5 text-blue-400" /> Multi-Agent Decisions Log</CardTitle>
+            <CardDescription>Decisions and metrics output by each of the 9 specialized agents</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3.5 text-sm">
+            <div className="border-b border-white/5 pb-2">
+              <span className="font-semibold text-blue-400">Agent 1 (Company Profiler): </span>
+              <span className="text-gray-300">Classified company in the <strong className="text-white">{data.companyResearch?.sector || 'Unknown'}</strong> sector / <strong className="text-white">{data.companyResearch?.industry || 'Unknown'}</strong> industry.</span>
+            </div>
+            <div className="border-b border-white/5 pb-2">
+              <span className="font-semibold text-blue-400">Agent 2 (Market Data): </span>
+              <span className="text-gray-300">Recorded current price of <strong className="text-white">₹{data.marketData?.currentPrice || 'N/A'}</strong> (52W Range: ₹{data.marketData?.fiftyTwoWeekLow || 'N/A'} - ₹{data.marketData?.fiftyTwoWeekHigh || 'N/A'}).</span>
+            </div>
+            <div className="border-b border-white/5 pb-2">
+              <span className="font-semibold text-blue-400">Agent 3 (Financial Analyst): </span>
+              <span className="text-gray-300">Calculated financial score of <strong className="text-white">{data.financialAnalysis?.financialScore.toFixed(0) || '0'}/100</strong> (ROE: {data.financialAnalysis?.roe || 'N/A'}%, P/E: {data.financialAnalysis?.peRatio || 'N/A'}).</span>
+            </div>
+            <div className="border-b border-white/5 pb-2">
+              <span className="font-semibold text-blue-400">Agent 4 (Technical Trend): </span>
+              <span className="text-gray-300">Determined a <strong className={data.technicalAnalysis?.trend === 'BULLISH' ? 'text-green-400' : data.technicalAnalysis?.trend === 'BEARISH' ? 'text-red-400' : 'text-yellow-400'}>{data.technicalAnalysis?.trend || 'NEUTRAL'}</strong> trend (Score: {data.technicalAnalysis?.technicalScore.toFixed(0) || '0'}/100, RSI: {data.technicalAnalysis?.rsi14 || 'N/A'}).</span>
+            </div>
+            <div className="border-b border-white/5 pb-2">
+              <span className="font-semibold text-blue-400">Agent 5 (News Sentiment): </span>
+              <span className="text-gray-300">Aggregated sentiment as <strong className="text-white">{data.newsAnalysis?.overallSentiment || 'NEUTRAL'}</strong> (Sentiment Score: {data.newsAnalysis?.sentimentScore.toFixed(0) || '0'}/100).</span>
+            </div>
+            <div className="border-b border-white/5 pb-2">
+              <span className="font-semibold text-blue-400">Agent 6 (Macro HEADWINDS): </span>
+              <span className="text-gray-300">Identified {data.macroAnalysis?.macroFactors.length || 0} macro headwinds and evaluated governance risks.</span>
+            </div>
+            <div className="border-b border-white/5 pb-2">
+              <span className="font-semibold text-blue-400">Agent 7 (Valuation): </span>
+              <span className="text-gray-300">Determined value as <strong className="text-white">{data.valuationAnalysis?.valuationStatus || 'FAIR_VALUED'}</strong> (Score: {data.valuationAnalysis?.valuationScore.toFixed(0) || '0'}/100).</span>
+            </div>
+            <div className="border-b border-white/5 pb-2">
+              <span className="font-semibold text-blue-400">Agent 8 (Risk Assessor): </span>
+              <span className="text-gray-300">Calculated overall risk score of <strong className="text-white">{data.riskAnalysis?.overallRiskScore.toFixed(0) || '0'}/100</strong> (Safety Level: {(100 - (data.riskAnalysis?.overallRiskScore || 0)).toFixed(0)}/100).</span>
+            </div>
+            <div>
+              <span className="font-semibold text-blue-400">Agent 9 (Chief Decision Officer): </span>
+              <span className="text-gray-300">Compiled final recommendation: <strong className={data.finalDecision.recommendation === 'INVEST' ? 'text-green-400' : 'text-yellow-400'}>{data.finalDecision.recommendation}</strong> ({data.finalDecision.confidencePercentage}% confidence).</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recharts Pie Chart Graph Card */}
+        <Card className="bg-black/40 backdrop-blur-md border-white/10 flex flex-col">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><BarChart2 className="w-5 h-5 text-green-400" /> Factor Score Distribution</CardTitle>
+            <CardDescription>Visual breakdown of the scores contributing to the Chief Decision Officer's verdict</CardDescription>
+          </CardHeader>
+          <CardContent className="flex-1 flex flex-col justify-center items-center h-[350px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, value }) => `${name}: ${value}`}
+                  outerRadius={85}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => [`${value}/100`, 'Score']} contentStyle={{ backgroundColor: '#000', borderColor: '#333' }} />
+              </PieChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
