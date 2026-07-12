@@ -30,7 +30,10 @@ News Snippets: ${searchResults}`;
             } 
         },
         overallSentiment: { type: "string", enum: ["POSITIVE", "NEGATIVE", "NEUTRAL"] },
-        sentimentScore: { type: "number" }
+        sentimentScore: { 
+            type: "number", 
+            description: "Sentiment score from 0 to 100, where 100 is extremely bullish/positive, 50 is neutral, and 0 is extremely bearish/negative." 
+        }
     }
   }, {
     name: "news_sentiment",

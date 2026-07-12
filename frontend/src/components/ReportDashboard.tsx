@@ -197,7 +197,7 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
             </div>
             <div className="border-b border-white/5 pb-2">
               <span className="font-semibold text-blue-400">Agent 3 (Financial Analyst): </span>
-              <span className="text-gray-300">Calculated financial score of <strong className="text-white">{data.financialAnalysis?.financialScore.toFixed(0) || '0'}/100</strong> (ROE: {data.financialAnalysis?.roe || 'N/A'}%, P/E: {data.financialAnalysis?.peRatio || 'N/A'}).</span>
+              <span className="text-gray-300">Calculated financial score of <strong className="text-white">{(data.financialAnalysis?.financialScore ?? 0).toFixed(0)}/100</strong> (ROE: {data.financialAnalysis?.roe !== undefined && data.financialAnalysis?.roe !== null && data.financialAnalysis?.roe !== 0 ? (data.financialAnalysis.roe * 100).toFixed(1) + '%' : 'N/A'}, P/E: {data.financialAnalysis?.peRatio !== undefined && data.financialAnalysis?.peRatio !== null && data.financialAnalysis?.peRatio !== 0 ? data.financialAnalysis.peRatio.toFixed(1) : 'N/A'}).</span>
             </div>
             <div className="border-b border-white/5 pb-2">
               <span className="font-semibold text-blue-400">Agent 4 (Technical Trend): </span>

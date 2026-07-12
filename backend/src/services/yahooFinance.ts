@@ -34,7 +34,7 @@ export async function getHistoricalData(ticker: string, period1: string) {
  * @param ticker Stock ticker
  * @param modules Array of summary modules to fetch
  */
-export async function getQuoteSummary(ticker: string, modules: string[] = ['financialData', 'defaultKeyStatistics', 'summaryProfile', 'incomeStatementHistory']) {
+export async function getQuoteSummary(ticker: string, modules: string[] = ['financialData', 'defaultKeyStatistics', 'summaryProfile', 'incomeStatementHistory', 'summaryDetail']) {
   try {
     // We suppress TS warning here because yahoo-finance2 types for quoteSummary modules can be restrictive
     // @ts-ignore
