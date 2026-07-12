@@ -15,7 +15,7 @@ export async function financialAnalysisNode(state: typeof ResearchState.State) {
   const operatingMargin = financialData?.operatingMargins || 0;
   const roe = financialData?.returnOnEquity || 0;
   const debtToEquity = financialData?.debtToEquity || 0;
-  const peRatio = summary?.summaryDetail?.forwardPE || 0;
+  const peRatio = summary?.summaryDetail?.forwardPE || summary?.summaryDetail?.trailingPE || 0;
 
   // Simple heuristic scoring (0-100)
   let score = 50;
