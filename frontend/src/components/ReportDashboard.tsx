@@ -26,11 +26,24 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
 
   const [timeframe, setTimeframe] = React.useState<'7d' | '30d' | '60d' | '90d' | '1y'>('30d');
 
+  const rawSentimentScore = data.newsAnalysis?.sentimentScore ?? 50;
+  const overallSentiment = data.newsAnalysis?.overallSentiment || 'NEUTRAL';
+  
+  // Sanitize sentiment score for older records using the old 0-1 scale
+  const sanitizedSentimentScore = (() => {
+    if (rawSentimentScore <= 1) {
+      if (overallSentiment === 'POSITIVE') return 85;
+      if (overallSentiment === 'NEGATIVE') return 15;
+      return 50; // Neutral
+    }
+    return Math.min(Math.max(rawSentimentScore, 0), 100);
+  })();
+
   const pieData = [
     { name: 'Financial Health', value: Math.round(data.financialAnalysis?.financialScore || 0) },
     { name: 'Technical Trend', value: Math.round(data.technicalAnalysis?.technicalScore || 0) },
     { name: 'Valuation', value: Math.round(data.valuationAnalysis?.valuationScore || 0) },
-    { name: 'Sentiment', value: Math.round(data.newsAnalysis?.sentimentScore || 0) },
+    { name: 'Sentiment', value: Math.round(sanitizedSentimentScore) },
     { name: 'Safety Level', value: Math.round(100 - (data.riskAnalysis?.overallRiskScore || 0)) },
   ];
   const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
@@ -260,8 +273,8 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
                 <span className="text-[#666666] text-[11px]">Real-time public consensus and media scoring.</span>
               </div>
               <div className="text-right">
-                <span className="font-semibold block text-[#444444]">{data.newsAnalysis?.overallSentiment || 'NEUTRAL'}</span>
-                <span className="text-[#9b9b9b] text-[10px] font-mono">Score: {data.newsAnalysis?.sentimentScore.toFixed(0) || '0'}/100</span>
+                <span className="font-semibold block text-[#444444]">{overallSentiment}</span>
+                <span className="text-[#9b9b9b] text-[10px] font-mono">Score: {sanitizedSentimentScore.toFixed(0)}/100</span>
               </div>
             </div>
 
