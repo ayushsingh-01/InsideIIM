@@ -19,6 +19,8 @@ interface PastResearch {
   };
 }
 
+const API_URL = import.meta.env.VITE_API_URL || "";
+
 export default function App() {
   const [ticker, setTicker] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "complete" | "error">("idle");
@@ -33,7 +35,7 @@ export default function App() {
 
   const fetchHistory = async () => {
     try {
-      const res = await fetch("/api/research/history");
+      const res = await fetch(`${API_URL}/api/research/history`);
       if (res.ok) {
         const data = await res.json();
         setHistory(data);
@@ -56,7 +58,7 @@ export default function App() {
     setErrorMsg("");
 
     const tickerUpper = tickerToSearch.toUpperCase();
-    const eventSource = new EventSource(`/api/research/stream?ticker=${encodeURIComponent(tickerUpper)}`);
+    const eventSource = new EventSource(`${API_URL}/api/research/stream?ticker=${encodeURIComponent(tickerUpper)}`);
 
     eventSource.onmessage = (event) => {
       try {
@@ -91,7 +93,7 @@ export default function App() {
     setProgressEvents([]);
     setErrorMsg("");
     try {
-      const res = await fetch(`/api/research/report/${encodeURIComponent(pastTicker)}`);
+      const res = await fetch(`${API_URL}/api/research/report/${encodeURIComponent(pastTicker)}`);
       if (!res.ok) {
         throw new Error("Failed to load report from server.");
       }
