@@ -2,10 +2,9 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
-import { Badge } from './ui/badge';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Legend } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { FinalDecision, FinancialAnalysis, MarketData, NewsAnalysis, RiskAnalysis, TechnicalAnalysis, ValuationAnalysis, CompanyResearch, MacroAnalysis } from '../types/graph';
-import { Activity, AlertTriangle, TrendingUp, Newspaper, DollarSign, Building, BarChart2 } from 'lucide-react';
+import { Activity, TrendingUp, DollarSign, Building, BarChart2, ShieldAlert, BadgeInfo } from 'lucide-react';
 
 interface ReportDashboardProps {
   data: {
@@ -59,40 +58,56 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
   const filteredPrices = getFilteredPrices();
 
   const decisionColor = 
-    data.finalDecision.recommendation === 'INVEST' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
-    data.finalDecision.recommendation === 'WATCHLIST' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
-    'bg-red-500/10 text-red-500 border-red-500/20';
+    data.finalDecision.recommendation === 'INVEST' ? 'border-[#4caf50] text-[#4caf50] bg-green-50/30' :
+    data.finalDecision.recommendation === 'WATCHLIST' ? 'border-[#f59e0b] text-[#f59e0b] bg-amber-50/30' :
+    'border-[#ef4444] text-[#ef4444] bg-red-50/30';
 
   return (
-    <div className="space-y-6 w-full max-w-7xl mx-auto p-4 animate-in fade-in zoom-in duration-500">
+    <div className="space-y-6 w-full max-w-7xl mx-auto animate-in fade-in duration-300">
       
-      {/* Header & Final Decision */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      {/* Header & Final Decision Card */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-[#eeeeee] pb-5">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">{data.ticker}</h1>
-          <p className="text-muted-foreground">{data.companyResearch?.industry} • {data.companyResearch?.sector}</p>
+          <div className="flex items-center gap-3">
+            <h2 className="text-3xl font-bold text-[#444444] font-sans tracking-tight">{data.ticker}</h2>
+            <span className={`text-xs px-2.5 py-0.5 rounded border uppercase font-bold tracking-wider ${decisionColor}`}>
+              {data.finalDecision.recommendation}
+            </span>
+          </div>
+          <p className="text-xs text-[#9b9b9b] mt-1 font-medium font-sans">
+            {data.companyResearch?.sector || 'Sector'} • {data.companyResearch?.industry || 'Industry'}
+          </p>
         </div>
-        <Card className={`border ${decisionColor} min-w-[300px]`}>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex justify-between">
-              RECOMMENDATION
-              <span className="font-mono">{data.finalDecision.confidencePercentage}% Conf</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-black">{data.finalDecision.recommendation}</div>
-          </CardContent>
-        </Card>
+
+        {/* CDO Box like Kite Account Balances */}
+        <div className="bg-white border border-[#e0e0e0] p-4 rounded-md min-w-[280px] flex justify-between items-center shadow-sm">
+          <div className="space-y-1">
+            <span className="text-[10px] text-[#9b9b9b] font-bold uppercase tracking-wider font-sans">Confidence Rating</span>
+            <div className="text-2xl font-light text-[#444444]">{data.finalDecision.confidencePercentage}%</div>
+          </div>
+          <div className="text-xs text-right border-l border-[#eeeeee] pl-6">
+            <span className="text-[10px] text-[#9b9b9b] block font-bold uppercase tracking-wider">Verdict</span>
+            <span className={`font-bold text-sm tracking-wide ${
+              data.finalDecision.recommendation === 'INVEST' ? 'text-[#4caf50]' :
+              data.finalDecision.recommendation === 'WATCHLIST' ? 'text-[#f59e0b]' :
+              'text-[#ef4444]'
+            }`}>
+              {data.finalDecision.recommendation}
+            </span>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Scores Card */}
-        <Card className="md:col-span-1 bg-black/40 backdrop-blur-md border-white/10">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Activity className="w-4 h-4 text-blue-400" /> Factor Scores</CardTitle>
+        <Card className="lg:col-span-1 bg-white border-[#e0e0e0] shadow-sm">
+          <CardHeader className="pb-3 border-b border-[#f2f2f2]">
+            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]">
+              <Activity className="w-4 h-4 text-[#ff5722]" /> Score Metrics
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-5 pt-5">
             <ScoreRow label="Financial Health" score={data.financialAnalysis?.financialScore || 0} />
             <ScoreRow label="Technical Trend" score={data.technicalAnalysis?.technicalScore || 0} />
             <ScoreRow label="Valuation" score={data.valuationAnalysis?.valuationScore || 0} />
@@ -100,14 +115,16 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
           </CardContent>
         </Card>
 
-        {/* Price Chart */}
-        <Card className="md:col-span-2 bg-black/40 backdrop-blur-md border-white/10">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="flex items-center gap-2"><TrendingUp className="w-4 h-4 text-green-400" /> Price Action</CardTitle>
+        {/* Kite-Style Price Chart Card */}
+        <Card className="lg:col-span-2 bg-white border-[#e0e0e0] shadow-sm flex flex-col">
+          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-[#f2f2f2] space-y-0">
+            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]">
+              <TrendingUp className="w-4 h-4 text-[#387ed1]" /> Market Price Trend
+            </CardTitle>
             <select
               value={timeframe}
               onChange={(e) => setTimeframe(e.target.value as any)}
-              className="bg-neutral-900 border border-white/10 text-white rounded-md px-2 py-1 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
+              className="bg-white border border-[#cccccc] text-[#444444] rounded-md px-2 py-1 text-xs focus:outline-none focus:border-[#ff5722] cursor-pointer font-medium font-sans"
             >
               <option value="7d">1 Week</option>
               <option value="30d">30 Days</option>
@@ -116,61 +133,86 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
               <option value="1y">1 Year</option>
             </select>
           </CardHeader>
-          <CardContent className="h-[250px] w-full">
+          <CardContent className="h-[250px] w-full pt-6 flex-1">
             {filteredPrices && filteredPrices.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={filteredPrices}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-                    <XAxis dataKey="date" tickFormatter={(v) => new Date(v).toLocaleDateString(undefined, {month:'short', day:'numeric'})} stroke="#ffffff50" />
-                    <YAxis domain={['auto', 'auto']} stroke="#ffffff50" />
-                    <Tooltip contentStyle={{ backgroundColor: '#000', borderColor: '#333' }} />
-                    <Line type="monotone" dataKey="price" stroke="#3b82f6" strokeWidth={3} dot={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f2f2f2" vertical={false} />
+                    <XAxis 
+                      dataKey="date" 
+                      tickFormatter={(v) => new Date(v).toLocaleDateString(undefined, {month:'short', day:'numeric'})} 
+                      stroke="#9b9b9b" 
+                      fontSize={10} 
+                      tickLine={false} 
+                      axisLine={false} 
+                    />
+                    <YAxis 
+                      domain={['auto', 'auto']} 
+                      stroke="#9b9b9b" 
+                      fontSize={10} 
+                      tickLine={false} 
+                      axisLine={false} 
+                      orientation="right" 
+                    />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e0e0e0', color: '#444444', fontSize: '11px' }} 
+                      labelFormatter={(label) => new Date(label).toLocaleDateString(undefined, {weekday:'long', year:'numeric', month:'short', day:'numeric'})}
+                    />
+                    {/* Dark crisp line styling inspired by Kite charts */}
+                    <Line type="monotone" dataKey="price" stroke="#111111" strokeWidth={1.8} dot={false} />
                 </LineChart>
                 </ResponsiveContainer>
             ) : (
-                <div className="w-full h-full flex items-center justify-center text-muted-foreground">No historical data available</div>
+                <div className="w-full h-full flex items-center justify-center text-xs text-[#9b9b9b]">No historical data available</div>
             )}
           </CardContent>
         </Card>
       </div>
 
       {/* Rationale & SWOT */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="bg-black/40 backdrop-blur-md border-white/10">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Building className="w-4 h-4 text-purple-400" /> Investment Thesis</CardTitle>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        {/* Thesis Panel */}
+        <Card className="bg-white border-[#e0e0e0] shadow-sm">
+          <CardHeader className="pb-3 border-b border-[#f2f2f2]">
+            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]">
+              <Building className="w-4 h-4 text-purple-600" /> Investment Thesis
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="leading-relaxed text-sm text-gray-300">{data.finalDecision.reasoning}</p>
+          <CardContent className="pt-4">
+            <p className="leading-relaxed text-sm text-[#555555] font-sans">{data.finalDecision.reasoning}</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-black/40 backdrop-blur-md border-white/10">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><BarChart2 className="w-4 h-4 text-orange-400" /> SWOT Analysis</CardTitle>
+        {/* SWOT Panel */}
+        <Card className="bg-white border-[#e0e0e0] shadow-sm">
+          <CardHeader className="pb-3 border-b border-[#f2f2f2]">
+            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]">
+              <BarChart2 className="w-4 h-4 text-orange-600" /> SWOT Analysis Matrix
+            </CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <h3 className="font-semibold text-green-400 mb-2">Strengths</h3>
-              <ul className="list-disc pl-4 space-y-1 text-gray-300">
+          <CardContent className="grid grid-cols-2 gap-4 text-xs pt-4 font-sans">
+            <div className="bg-green-50/20 border border-green-100 p-3 rounded">
+              <h3 className="font-bold text-green-700 mb-1.5 text-xs">Strengths</h3>
+              <ul className="list-disc pl-4 space-y-1 text-[#555555] text-[11px]">
                 {data.finalDecision.swotAnalysis.strengths.map((s, i) => <li key={i}>{s}</li>)}
               </ul>
             </div>
-            <div>
-              <h3 className="font-semibold text-red-400 mb-2">Weaknesses</h3>
-              <ul className="list-disc pl-4 space-y-1 text-gray-300">
+            <div className="bg-red-50/20 border border-red-100 p-3 rounded">
+              <h3 className="font-bold text-red-700 mb-1.5 text-xs">Weaknesses</h3>
+              <ul className="list-disc pl-4 space-y-1 text-[#555555] text-[11px]">
                 {data.finalDecision.swotAnalysis.weaknesses.map((s, i) => <li key={i}>{s}</li>)}
               </ul>
             </div>
-            <div>
-              <h3 className="font-semibold text-blue-400 mb-2">Opportunities</h3>
-              <ul className="list-disc pl-4 space-y-1 text-gray-300">
+            <div className="bg-blue-50/20 border border-blue-100 p-3 rounded">
+              <h3 className="font-bold text-blue-700 mb-1.5 text-xs">Opportunities</h3>
+              <ul className="list-disc pl-4 space-y-1 text-[#555555] text-[11px]">
                 {data.finalDecision.swotAnalysis.opportunities.map((s, i) => <li key={i}>{s}</li>)}
               </ul>
             </div>
-            <div>
-              <h3 className="font-semibold text-yellow-400 mb-2">Threats</h3>
-              <ul className="list-disc pl-4 space-y-1 text-gray-300">
+            <div className="bg-amber-50/20 border border-amber-100 p-3 rounded">
+              <h3 className="font-bold text-amber-700 mb-1.5 text-xs">Threats</h3>
+              <ul className="list-disc pl-4 space-y-1 text-[#555555] text-[11px]">
                 {data.finalDecision.swotAnalysis.threats.map((s, i) => <li key={i}>{s}</li>)}
               </ul>
             </div>
@@ -179,60 +221,136 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
       </div>
 
       {/* 9 Agents Decisions & Graph Breakdown */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
         {/* Decisions List Card */}
-        <Card className="bg-black/40 backdrop-blur-md border-white/10">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Activity className="w-5 h-5 text-blue-400" /> Multi-Agent Decisions Log</CardTitle>
-            <CardDescription>Decisions and metrics output by each of the 9 specialized agents</CardDescription>
+        <Card className="bg-white border-[#e0e0e0] shadow-sm">
+          <CardHeader className="pb-3 border-b border-[#f2f2f2]">
+            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]">
+              <Activity className="w-4 h-4 text-[#ff5722]" /> Multi-Agent Decisions Log
+            </CardTitle>
+            <CardDescription className="text-[11px] text-[#9b9b9b] font-medium font-sans">Metrics compiled from the 9 specialized agents</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3.5 text-sm">
-            <div className="border-b border-white/5 pb-2">
-              <span className="font-semibold text-blue-400">Agent 1 (Company Profiler): </span>
-              <span className="text-gray-300">Classified company in the <strong className="text-white">{data.companyResearch?.sector || 'Unknown'}</strong> sector / <strong className="text-white">{data.companyResearch?.industry || 'Unknown'}</strong> industry.</span>
+          <CardContent className="space-y-3.5 pt-4 text-xs font-sans">
+            <div className="border-b border-[#f9f9f9] pb-2 flex justify-between">
+              <div>
+                <span className="font-bold text-[#ff5722] block">Agent 1: Company Profiler</span>
+                <span className="text-[#666666] text-[11px]">Sector classification and business description.</span>
+              </div>
+              <div className="text-right">
+                <span className="font-semibold block text-[#444444]">{data.companyResearch?.sector || 'Unknown'}</span>
+                <span className="text-[#9b9b9b] text-[10px]">{data.companyResearch?.industry || 'Unknown'}</span>
+              </div>
             </div>
-            <div className="border-b border-white/5 pb-2">
-              <span className="font-semibold text-blue-400">Agent 2 (Market Data): </span>
-              <span className="text-gray-300">Recorded current price of <strong className="text-white">₹{data.marketData?.currentPrice || 'N/A'}</strong> (52W Range: ₹{data.marketData?.fiftyTwoWeekLow || 'N/A'} - ₹{data.marketData?.fiftyTwoWeekHigh || 'N/A'}).</span>
+            
+            <div className="border-b border-[#f9f9f9] pb-2 flex justify-between">
+              <div>
+                <span className="font-bold text-[#ff5722] block">Agent 2: Market Data Feed</span>
+                <span className="text-[#666666] text-[11px]">Price feed tracking and 52W range logs.</span>
+              </div>
+              <div className="text-right font-mono">
+                <span className="font-semibold block text-[#444444]">₹{data.marketData?.currentPrice || 'N/A'}</span>
+                <span className="text-[#9b9b9b] text-[10px]">52W Range: ₹{data.marketData?.fiftyTwoWeekLow || 'N/A'} - ₹{data.marketData?.fiftyTwoWeekHigh || 'N/A'}</span>
+              </div>
             </div>
-            <div className="border-b border-white/5 pb-2">
-              <span className="font-semibold text-blue-400">Agent 3 (Financial Analyst): </span>
-              <span className="text-gray-300">Calculated financial score of <strong className="text-white">{(data.financialAnalysis?.financialScore ?? 0).toFixed(0)}/100</strong> (ROE: {data.financialAnalysis?.roe !== undefined && data.financialAnalysis?.roe !== null && data.financialAnalysis?.roe !== 0 ? (data.financialAnalysis.roe * 100).toFixed(1) + '%' : 'N/A'}, P/E: {data.financialAnalysis?.peRatio !== undefined && data.financialAnalysis?.peRatio !== null && data.financialAnalysis?.peRatio !== 0 ? data.financialAnalysis.peRatio.toFixed(1) : 'N/A'}).</span>
+
+            <div className="border-b border-[#f9f9f9] pb-2 flex justify-between">
+              <div>
+                <span className="font-bold text-[#ff5722] block">Agent 3: Financial Analysis</span>
+                <span className="text-[#666666] text-[11px]">P&L evaluation, margins, and yield computations.</span>
+              </div>
+              <div className="text-right">
+                <span className="font-semibold block text-[#444444]">Score: {data.financialAnalysis?.financialScore.toFixed(0) || '0'}/100</span>
+                <span className="text-[#9b9b9b] text-[10px] font-mono">
+                  ROE: {data.financialAnalysis?.roe !== undefined && data.financialAnalysis?.roe !== null && data.financialAnalysis?.roe !== 0 ? (data.financialAnalysis.roe * 100).toFixed(1) + '%' : 'N/A'}, 
+                  P/E: {data.financialAnalysis?.peRatio !== undefined && data.financialAnalysis?.peRatio !== null && data.financialAnalysis?.peRatio !== 0 ? data.financialAnalysis.peRatio.toFixed(1) : 'N/A'}
+                </span>
+              </div>
             </div>
-            <div className="border-b border-white/5 pb-2">
-              <span className="font-semibold text-blue-400">Agent 4 (Technical Trend): </span>
-              <span className="text-gray-300">Determined a <strong className={data.technicalAnalysis?.trend === 'BULLISH' ? 'text-green-400' : data.technicalAnalysis?.trend === 'BEARISH' ? 'text-red-400' : 'text-yellow-400'}>{data.technicalAnalysis?.trend || 'NEUTRAL'}</strong> trend (Score: {data.technicalAnalysis?.technicalScore.toFixed(0) || '0'}/100, RSI: {data.technicalAnalysis?.rsi14 || 'N/A'}).</span>
+
+            <div className="border-b border-[#f9f9f9] pb-2 flex justify-between">
+              <div>
+                <span className="font-bold text-[#ff5722] block">Agent 4: Technical Analysis</span>
+                <span className="text-[#666666] text-[11px]">Moving averages, RSI trends, and MACD indicators.</span>
+              </div>
+              <div className="text-right">
+                <span className={`font-semibold block ${
+                  data.technicalAnalysis?.trend === 'BULLISH' ? 'text-[#4caf50]' :
+                  data.technicalAnalysis?.trend === 'BEARISH' ? 'text-[#ef4444]' : 'text-[#f59e0b]'
+                }`}>{data.technicalAnalysis?.trend || 'NEUTRAL'}</span>
+                <span className="text-[#9b9b9b] text-[10px] font-mono">Score: {data.technicalAnalysis?.technicalScore.toFixed(0) || '0'}/100, RSI: {data.technicalAnalysis?.rsi14 || 'N/A'}</span>
+              </div>
             </div>
-            <div className="border-b border-white/5 pb-2">
-              <span className="font-semibold text-blue-400">Agent 5 (News Sentiment): </span>
-              <span className="text-gray-300">Aggregated sentiment as <strong className="text-white">{data.newsAnalysis?.overallSentiment || 'NEUTRAL'}</strong> (Sentiment Score: {data.newsAnalysis?.sentimentScore.toFixed(0) || '0'}/100).</span>
+
+            <div className="border-b border-[#f9f9f9] pb-2 flex justify-between">
+              <div>
+                <span className="font-bold text-[#ff5722] block">Agent 5: News Sentiment Analyzer</span>
+                <span className="text-[#666666] text-[11px]">Real-time public consensus and media scoring.</span>
+              </div>
+              <div className="text-right">
+                <span className="font-semibold block text-[#444444]">{data.newsAnalysis?.overallSentiment || 'NEUTRAL'}</span>
+                <span className="text-[#9b9b9b] text-[10px] font-mono">Score: {data.newsAnalysis?.sentimentScore.toFixed(0) || '0'}/100</span>
+              </div>
             </div>
-            <div className="border-b border-white/5 pb-2">
-              <span className="font-semibold text-blue-400">Agent 6 (Macro HEADWINDS): </span>
-              <span className="text-gray-300">Identified {data.macroAnalysis?.macroFactors.length || 0} macro headwinds and evaluated governance risks.</span>
+
+            <div className="border-b border-[#f9f9f9] pb-2 flex justify-between">
+              <div>
+                <span className="font-bold text-[#ff5722] block">Agent 6: Macro Headwinds</span>
+                <span className="text-[#666666] text-[11px]">Macroeconomic threats and governance audits.</span>
+              </div>
+              <div className="text-right">
+                <span className="font-semibold block text-[#444444]">Headwinds Count</span>
+                <span className="text-[#9b9b9b] text-[10px]">{data.macroAnalysis?.macroFactors.length || 0} Risks Identified</span>
+              </div>
             </div>
-            <div className="border-b border-white/5 pb-2">
-              <span className="font-semibold text-blue-400">Agent 7 (Valuation): </span>
-              <span className="text-gray-300">Determined value as <strong className="text-white">{data.valuationAnalysis?.valuationStatus || 'FAIR_VALUED'}</strong> (Score: {data.valuationAnalysis?.valuationScore.toFixed(0) || '0'}/100).</span>
+
+            <div className="border-b border-[#f9f9f9] pb-2 flex justify-between">
+              <div>
+                <span className="font-bold text-[#ff5722] block">Agent 7: Valuation Audit</span>
+                <span className="text-[#666666] text-[11px]">Multiple valuations and pricing targets.</span>
+              </div>
+              <div className="text-right">
+                <span className="font-semibold block text-[#444444]">{data.valuationAnalysis?.valuationStatus || 'FAIR_VALUED'}</span>
+                <span className="text-[#9b9b9b] text-[10px] font-mono">Score: {data.valuationAnalysis?.valuationScore.toFixed(0) || '0'}/100</span>
+              </div>
             </div>
-            <div className="border-b border-white/5 pb-2">
-              <span className="font-semibold text-blue-400">Agent 8 (Risk Assessor): </span>
-              <span className="text-gray-300">Calculated overall risk score of <strong className="text-white">{data.riskAnalysis?.overallRiskScore.toFixed(0) || '0'}/100</strong> (Safety Level: {(100 - (data.riskAnalysis?.overallRiskScore || 0)).toFixed(0)}/100).</span>
+
+            <div className="border-b border-[#f9f9f9] pb-2 flex justify-between">
+              <div>
+                <span className="font-bold text-[#ff5722] block">Agent 8: Risk Assessor</span>
+                <span className="text-[#666666] text-[11px]">Risk weight assessment and audit compilation.</span>
+              </div>
+              <div className="text-right">
+                <span className="font-semibold block text-[#444444]">Risk: {data.riskAnalysis?.overallRiskScore.toFixed(0) || '0'}/100</span>
+                <span className="text-[#9b9b9b] text-[10px] font-mono">Safety: {(100 - (data.riskAnalysis?.overallRiskScore || 0)).toFixed(0)}/100</span>
+              </div>
             </div>
-            <div>
-              <span className="font-semibold text-blue-400">Agent 9 (Chief Decision Officer): </span>
-              <span className="text-gray-300">Compiled final recommendation: <strong className={data.finalDecision.recommendation === 'INVEST' ? 'text-green-400' : 'text-yellow-400'}>{data.finalDecision.recommendation}</strong> ({data.finalDecision.confidencePercentage}% confidence).</span>
+
+            <div className="flex justify-between">
+              <div>
+                <span className="font-bold text-[#ff5722] block">Agent 9: Chief Decision Officer</span>
+                <span className="text-[#666666] text-[11px]">Compiles the final investment trade verdict.</span>
+              </div>
+              <div className="text-right">
+                <span className={`font-bold block uppercase ${
+                  data.finalDecision.recommendation === 'INVEST' ? 'text-[#4caf50]' :
+                  data.finalDecision.recommendation === 'WATCHLIST' ? 'text-[#f59e0b]' : 'text-[#ef4444]'
+                }`}>{data.finalDecision.recommendation}</span>
+                <span className="text-[#9b9b9b] text-[10px] font-mono">{data.finalDecision.confidencePercentage}% Confidence</span>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Recharts Pie Chart Graph Card */}
-        <Card className="bg-black/40 backdrop-blur-md border-white/10 flex flex-col">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><BarChart2 className="w-5 h-5 text-green-400" /> Factor Score Distribution</CardTitle>
-            <CardDescription>Visual breakdown of the scores contributing to the Chief Decision Officer's verdict</CardDescription>
+        <Card className="bg-white border-[#e0e0e0] shadow-sm flex flex-col">
+          <CardHeader className="pb-3 border-b border-[#f2f2f2]">
+            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]">
+              <BarChart2 className="w-4 h-4 text-green-600" /> Factor Score Distribution
+            </CardTitle>
+            <CardDescription className="text-[11px] text-[#9b9b9b] font-medium font-sans">Weight breakdown of the core scores evaluated</CardDescription>
           </CardHeader>
-          <CardContent className="flex-1 flex flex-col justify-center items-center h-[350px]">
+          <CardContent className="flex-1 flex flex-col justify-center items-center h-[350px] pt-4">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -249,7 +367,7 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
                     <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => [`${value}/100`, 'Score']} contentStyle={{ backgroundColor: '#000', borderColor: '#333' }} />
+                <Tooltip formatter={(value) => [`${value}/100`, 'Score']} contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e0e0e0', color: '#444444' }} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
@@ -262,14 +380,14 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
 
 function ScoreRow({ label, score }: { label: string; score: number }) {
   return (
-    <div>
-      <div className="flex justify-between text-sm mb-1">
+    <div className="font-sans">
+      <div className="flex justify-between text-xs font-semibold text-[#666666] mb-1.5">
         <span>{label}</span>
-        <span className="font-mono">{score.toFixed(0)}/100</span>
+        <span className="font-mono text-[#444444]">{score.toFixed(0)}/100</span>
       </div>
-      <div className="w-full bg-white/5 rounded-full h-2">
+      <div className="w-full bg-[#eeeeee] rounded-sm h-1.5">
         <div 
-          className="bg-blue-500 h-2 rounded-full transition-all duration-1000" 
+          className="bg-[#387ed1] h-1.5 rounded-sm transition-all duration-1000" 
           style={{ width: `${score}%` }} 
         />
       </div>
