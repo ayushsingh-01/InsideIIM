@@ -162,7 +162,7 @@ This application uses a **split-deployment architecture** for production environ
 
 ---
 
-## 🎁 LLM Chat Session Transcript & Logs
+## LLM Chat Session Transcript & Logs
 
 As part of this build, the entire process was done in partnership with an LLM (Antigravity). For insight into the design decisions, troubleshooting of the Vercel compilation peer dependencies, and deployment strategy, you can review the full chronological logs here:
 * [CONVERSATION_LOGS.md](file:///z:/InsideIIM/CONVERSATION_LOGS.md)
