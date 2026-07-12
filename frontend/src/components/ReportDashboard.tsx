@@ -25,7 +25,7 @@ interface ReportDashboardProps {
 export function ReportDashboard({ data }: ReportDashboardProps) {
   if (!data.finalDecision) return null;
 
-  const [timeframe, setTimeframe] = React.useState<'1d' | '30d' | '60d' | '90d' | '1y'>('30d');
+  const [timeframe, setTimeframe] = React.useState<'7d' | '30d' | '60d' | '90d' | '1y'>('30d');
 
   const getFilteredPrices = () => {
     const prices = data.marketData?.historicalPrices || [];
@@ -34,12 +34,9 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
     const sorted = [...prices].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     const latestDate = new Date(sorted[sorted.length - 1].date);
     
-    if (timeframe === '1d') {
-      return sorted.slice(-2);
-    }
-    
     let daysToSubtract = 30;
-    if (timeframe === '30d') daysToSubtract = 30;
+    if (timeframe === '7d') daysToSubtract = 7;
+    else if (timeframe === '30d') daysToSubtract = 30;
     else if (timeframe === '60d') daysToSubtract = 60;
     else if (timeframe === '90d') daysToSubtract = 90;
     else if (timeframe === '1y') daysToSubtract = 365;
@@ -103,7 +100,7 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
               onChange={(e) => setTimeframe(e.target.value as any)}
               className="bg-neutral-900 border border-white/10 text-white rounded-md px-2 py-1 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
             >
-              <option value="1d">1 Day</option>
+              <option value="7d">1 Week</option>
               <option value="30d">30 Days</option>
               <option value="60d">60 Days</option>
               <option value="90d">90 Days</option>

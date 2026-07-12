@@ -130,7 +130,7 @@ This document contains a curated, professional log of the pairing sessions betwe
 
 ### 👤 User
 > Now, please add an option to delete stocks from the "Past Researches" history list.
-> Also, inside the stock research details view, add a dropdown selector to change the price chart view range between 1 Day, 30 Days, 60 Days, 90 Days, and 1 Year. Update the conversation logs file.
+> Also, inside the stock research details view, add a dropdown selector to change the price chart view range between 1 Week, 30 Days, 60 Days, 90 Days, and 1 Year. Update the conversation logs file.
 
 ### 🤖 Assistant
 > Excellent feature requests! Adding deletion and timeframe scaling gives users total control over their research data.
@@ -144,7 +144,7 @@ This document contains a curated, professional log of the pairing sessions betwe
 >    * Wrapped it with `e.stopPropagation()` so that deleting a card does not trigger the report viewer.
 > 3. **Timeframe Selection**:
 >    * Refactored the backend market agent [marketData.ts](file:///z:/InsideIIM/backend/src/agents/marketData.ts) to fetch **365 days of historical data** instead of 30 days during stock analysis.
->    * Added a time range state and dropdown `<select>` element in [ReportDashboard.tsx](file:///z:/InsideIIM/frontend/src/components/ReportDashboard.tsx).
+>    * Added a time range state and dropdown `<select>` element in [ReportDashboard.tsx](file:///z:/InsideIIM/frontend/src/components/ReportDashboard.tsx) containing 1 Week, 30 Days, 60 Days, 90 Days, and 1 Year ranges.
 >    * Designed a fast, client-side filtration function to filter and redraw the Recharts trend line instantly without requiring new API requests.
 >
 > The system now has full CRUD capability for reports and flexible chart rendering! Let's test the build.
