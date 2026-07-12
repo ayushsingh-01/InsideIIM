@@ -24,14 +24,14 @@ export function LoadingUI({ progressEvents }: LoadingUIProps) {
   const completedAgents = progressEvents.map(e => e.agent);
 
   return (
-    <div className="w-full max-w-2xl mx-auto mt-12 p-8 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md shadow-2xl">
+    <div className="w-full max-w-2xl mx-auto mt-12 p-8 rounded-2xl bg-white border border-[#e0e0e0] shadow-md text-[#444444]">
       <div className="text-center mb-8">
         <div className="inline-block relative w-16 h-16 mb-4">
-          <div className="absolute inset-0 border-4 border-blue-500/30 rounded-full"></div>
-          <div className="absolute inset-0 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
+          <div className="absolute inset-0 border-4 border-[#ff5722]/30 rounded-full"></div>
+          <div className="absolute inset-0 border-4 border-[#ff5722] rounded-full border-t-transparent animate-spin"></div>
         </div>
         <h2 className="text-2xl font-bold">Researching...</h2>
-        <p className="text-muted-foreground mt-2">Our AI agents are analyzing millions of data points</p>
+        <p className="text-gray-500 mt-2">Our AI agents are analyzing millions of data points</p>
       </div>
 
       <div className="space-y-4">
@@ -46,20 +46,20 @@ export function LoadingUI({ progressEvents }: LoadingUIProps) {
           const isPending = !isComplete && !isActive;
 
           return (
-            <div key={agent.id} className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${isActive ? 'bg-white/5 border border-white/10' : ''}`}>
+            <div key={agent.id} className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${isActive ? 'bg-orange-50 border border-orange-100' : ''}`}>
               {isComplete ? (
                 <CheckCircle2 className="w-5 h-5 text-green-500" />
               ) : isActive ? (
-                <CircleDashed className="w-5 h-5 text-blue-400 animate-spin" />
+                <CircleDashed className="w-5 h-5 text-[#ff5722] animate-spin" />
               ) : (
-                <div className="w-5 h-5 rounded-full border-2 border-white/20" />
+                <div className="w-5 h-5 rounded-full border-2 border-gray-200" />
               )}
               <div className="flex-1">
-                <div className={`font-medium ${isComplete ? 'text-white' : isActive ? 'text-blue-400' : 'text-gray-500'}`}>
+                <div className={`font-medium ${isComplete ? 'text-[#444444]' : isActive ? 'text-[#ff5722]' : 'text-gray-400'}`}>
                   {agent.name}
                 </div>
                 {isComplete && (
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-xs text-gray-500">
                     {progressEvents.find(e => e.agent === agent.id)?.message}
                   </div>
                 )}

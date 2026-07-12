@@ -4,7 +4,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { FinalDecision, FinancialAnalysis, MarketData, NewsAnalysis, RiskAnalysis, TechnicalAnalysis, ValuationAnalysis, CompanyResearch, MacroAnalysis } from '../types/graph';
-import { Activity, TrendingUp, DollarSign, Building, BarChart2, ShieldAlert, BadgeInfo } from 'lucide-react';
+import { Activity, TrendingUp, Building, BarChart2 } from 'lucide-react';
 
 interface ReportDashboardProps {
   data: {
@@ -63,51 +63,35 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
     'border-[#ef4444] text-[#ef4444] bg-red-50/30';
 
   return (
-    <div className="space-y-6 w-full max-w-7xl mx-auto animate-in fade-in duration-300">
+    <div className="space-y-6 w-full max-w-7xl mx-auto p-4 animate-in fade-in zoom-in duration-500 text-[#444444]">
       
-      {/* Header & Final Decision Card */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-[#eeeeee] pb-5">
+      {/* Header & Final Decision */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <div className="flex items-center gap-3">
-            <h2 className="text-3xl font-bold text-[#444444] font-sans tracking-tight">{data.ticker}</h2>
-            <span className={`text-xs px-2.5 py-0.5 rounded border uppercase font-bold tracking-wider ${decisionColor}`}>
-              {data.finalDecision.recommendation}
-            </span>
-          </div>
-          <p className="text-xs text-[#9b9b9b] mt-1 font-medium font-sans">
-            {data.companyResearch?.sector || 'Sector'} • {data.companyResearch?.industry || 'Industry'}
-          </p>
+          <h1 className="text-4xl font-bold tracking-tight text-[#444444]">{data.ticker}</h1>
+          <p className="text-xs text-gray-500 mt-1 font-semibold">{data.companyResearch?.industry} • {data.companyResearch?.sector}</p>
         </div>
-
-        {/* CDO Box like Kite Account Balances */}
-        <div className="bg-white border border-[#e0e0e0] p-4 rounded-md min-w-[280px] flex justify-between items-center shadow-sm">
-          <div className="space-y-1">
-            <span className="text-[10px] text-[#9b9b9b] font-bold uppercase tracking-wider font-sans">Confidence Rating</span>
-            <div className="text-2xl font-light text-[#444444]">{data.finalDecision.confidencePercentage}%</div>
-          </div>
-          <div className="text-xs text-right border-l border-[#eeeeee] pl-6">
-            <span className="text-[10px] text-[#9b9b9b] block font-bold uppercase tracking-wider">Verdict</span>
-            <span className={`font-bold text-sm tracking-wide ${
-              data.finalDecision.recommendation === 'INVEST' ? 'text-[#4caf50]' :
-              data.finalDecision.recommendation === 'WATCHLIST' ? 'text-[#f59e0b]' :
-              'text-[#ef4444]'
-            }`}>
-              {data.finalDecision.recommendation}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Scores Card */}
-        <Card className="lg:col-span-1 bg-white border-[#e0e0e0] shadow-sm">
-          <CardHeader className="pb-3 border-b border-[#f2f2f2]">
-            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]">
-              <Activity className="w-4 h-4 text-[#ff5722]" /> Score Metrics
+        <Card className={`border ${decisionColor} min-w-[300px] shadow-sm`}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs font-bold flex justify-between text-[#9b9b9b] uppercase tracking-wider">
+              RECOMMENDATION
+              <span className="font-mono text-gray-500 font-bold">{data.finalDecision.confidencePercentage}% Conf</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-5 pt-5">
+          <CardContent>
+            <div className="text-3xl font-black">{data.finalDecision.recommendation}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        {/* Scores Card */}
+        <Card className="md:col-span-1 bg-white border-[#e0e0e0] shadow-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]"><Activity className="w-4 h-4 text-[#ff5722]" /> Factor Scores</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-5">
             <ScoreRow label="Financial Health" score={data.financialAnalysis?.financialScore || 0} />
             <ScoreRow label="Technical Trend" score={data.technicalAnalysis?.technicalScore || 0} />
             <ScoreRow label="Valuation" score={data.valuationAnalysis?.valuationScore || 0} />
@@ -115,16 +99,14 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
           </CardContent>
         </Card>
 
-        {/* Kite-Style Price Chart Card */}
-        <Card className="lg:col-span-2 bg-white border-[#e0e0e0] shadow-sm flex flex-col">
-          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-[#f2f2f2] space-y-0">
-            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]">
-              <TrendingUp className="w-4 h-4 text-[#387ed1]" /> Market Price Trend
-            </CardTitle>
+        {/* Price Chart */}
+        <Card className="md:col-span-2 bg-white border-[#e0e0e0] shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]"><TrendingUp className="w-4 h-4 text-[#387ed1]" /> Price Action</CardTitle>
             <select
               value={timeframe}
               onChange={(e) => setTimeframe(e.target.value as any)}
-              className="bg-white border border-[#cccccc] text-[#444444] rounded-md px-2 py-1 text-xs focus:outline-none focus:border-[#ff5722] cursor-pointer font-medium font-sans"
+              className="bg-white border border-[#cccccc] text-[#444444] rounded-md px-2 py-1 text-xs focus:outline-none focus:border-[#ff5722] cursor-pointer font-semibold"
             >
               <option value="7d">1 Week</option>
               <option value="30d">30 Days</option>
@@ -133,7 +115,7 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
               <option value="1y">1 Year</option>
             </select>
           </CardHeader>
-          <CardContent className="h-[250px] w-full pt-6 flex-1">
+          <CardContent className="h-[250px] w-full pt-4">
             {filteredPrices && filteredPrices.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={filteredPrices}>
@@ -156,9 +138,8 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
                     />
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e0e0e0', color: '#444444', fontSize: '11px' }} 
-                      labelFormatter={(label) => new Date(label).toLocaleDateString(undefined, {weekday:'long', year:'numeric', month:'short', day:'numeric'})}
                     />
-                    {/* Dark crisp line styling inspired by Kite charts */}
+                    {/* solid crisp dark line like Kite */}
                     <Line type="monotone" dataKey="price" stroke="#111111" strokeWidth={1.8} dot={false} />
                 </LineChart>
                 </ResponsiveContainer>
@@ -170,49 +151,42 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
       </div>
 
       {/* Rationale & SWOT */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
-        {/* Thesis Panel */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="bg-white border-[#e0e0e0] shadow-sm">
-          <CardHeader className="pb-3 border-b border-[#f2f2f2]">
-            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]">
-              <Building className="w-4 h-4 text-purple-600" /> Investment Thesis
-            </CardTitle>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]"><Building className="w-4 h-4 text-purple-600" /> Investment Thesis</CardTitle>
           </CardHeader>
-          <CardContent className="pt-4">
-            <p className="leading-relaxed text-sm text-[#555555] font-sans">{data.finalDecision.reasoning}</p>
+          <CardContent>
+            <p className="leading-relaxed text-sm text-[#555555]">{data.finalDecision.reasoning}</p>
           </CardContent>
         </Card>
 
-        {/* SWOT Panel */}
         <Card className="bg-white border-[#e0e0e0] shadow-sm">
-          <CardHeader className="pb-3 border-b border-[#f2f2f2]">
-            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]">
-              <BarChart2 className="w-4 h-4 text-orange-600" /> SWOT Analysis Matrix
-            </CardTitle>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]"><BarChart2 className="w-4 h-4 text-orange-600" /> SWOT Analysis</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-4 text-xs pt-4 font-sans">
+          <CardContent className="grid grid-cols-2 gap-4 text-xs font-sans">
             <div className="bg-green-50/20 border border-green-100 p-3 rounded">
-              <h3 className="font-bold text-green-700 mb-1.5 text-xs">Strengths</h3>
-              <ul className="list-disc pl-4 space-y-1 text-[#555555] text-[11px]">
+              <h3 className="font-bold text-green-700 mb-1.5">Strengths</h3>
+              <ul className="list-disc pl-4 space-y-1 text-[#555555]">
                 {data.finalDecision.swotAnalysis.strengths.map((s, i) => <li key={i}>{s}</li>)}
               </ul>
             </div>
             <div className="bg-red-50/20 border border-red-100 p-3 rounded">
-              <h3 className="font-bold text-red-700 mb-1.5 text-xs">Weaknesses</h3>
-              <ul className="list-disc pl-4 space-y-1 text-[#555555] text-[11px]">
+              <h3 className="font-bold text-red-700 mb-1.5">Weaknesses</h3>
+              <ul className="list-disc pl-4 space-y-1 text-[#555555]">
                 {data.finalDecision.swotAnalysis.weaknesses.map((s, i) => <li key={i}>{s}</li>)}
               </ul>
             </div>
             <div className="bg-blue-50/20 border border-blue-100 p-3 rounded">
-              <h3 className="font-bold text-blue-700 mb-1.5 text-xs">Opportunities</h3>
-              <ul className="list-disc pl-4 space-y-1 text-[#555555] text-[11px]">
+              <h3 className="font-bold text-blue-700 mb-1.5">Opportunities</h3>
+              <ul className="list-disc pl-4 space-y-1 text-[#555555]">
                 {data.finalDecision.swotAnalysis.opportunities.map((s, i) => <li key={i}>{s}</li>)}
               </ul>
             </div>
             <div className="bg-amber-50/20 border border-amber-100 p-3 rounded">
-              <h3 className="font-bold text-amber-700 mb-1.5 text-xs">Threats</h3>
-              <ul className="list-disc pl-4 space-y-1 text-[#555555] text-[11px]">
+              <h3 className="font-bold text-amber-700 mb-1.5">Threats</h3>
+              <ul className="list-disc pl-4 space-y-1 text-[#555555]">
                 {data.finalDecision.swotAnalysis.threats.map((s, i) => <li key={i}>{s}</li>)}
               </ul>
             </div>
@@ -221,17 +195,15 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
       </div>
 
       {/* 9 Agents Decisions & Graph Breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* Decisions List Card */}
         <Card className="bg-white border-[#e0e0e0] shadow-sm">
-          <CardHeader className="pb-3 border-b border-[#f2f2f2]">
-            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]">
-              <Activity className="w-4 h-4 text-[#ff5722]" /> Multi-Agent Decisions Log
-            </CardTitle>
-            <CardDescription className="text-[11px] text-[#9b9b9b] font-medium font-sans">Metrics compiled from the 9 specialized agents</CardDescription>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]"><Activity className="w-4 h-4 text-[#ff5722]" /> Multi-Agent Decisions Log</CardTitle>
+            <CardDescription className="text-[11px] text-[#9b9b9b] font-medium font-sans">Decisions and metrics output by each of the 9 specialized agents</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3.5 pt-4 text-xs font-sans">
+          <CardContent className="space-y-3.5 text-xs">
             <div className="border-b border-[#f9f9f9] pb-2 flex justify-between">
               <div>
                 <span className="font-bold text-[#ff5722] block">Agent 1: Company Profiler</span>
@@ -344,10 +316,8 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
 
         {/* Recharts Pie Chart Graph Card */}
         <Card className="bg-white border-[#e0e0e0] shadow-sm flex flex-col">
-          <CardHeader className="pb-3 border-b border-[#f2f2f2]">
-            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]">
-              <BarChart2 className="w-4 h-4 text-green-600" /> Factor Score Distribution
-            </CardTitle>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9b9b9b]"><BarChart2 className="w-4 h-4 text-green-600" /> Factor Score Distribution</CardTitle>
             <CardDescription className="text-[11px] text-[#9b9b9b] font-medium font-sans">Weight breakdown of the core scores evaluated</CardDescription>
           </CardHeader>
           <CardContent className="flex-1 flex flex-col justify-center items-center h-[350px] pt-4">
