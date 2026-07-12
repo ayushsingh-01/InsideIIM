@@ -59,6 +59,23 @@ app.get('/api/research/report/:ticker', async (req, res) => {
   }
 });
 
+// DELETE: remove a report from database
+app.delete('/api/research/report/:ticker', async (req, res) => {
+  try {
+    const { ticker } = req.params;
+    if (!isDbConnected) {
+      return res.status(400).json({ error: "Database not connected. Offline mode." });
+    }
+    const result = await Research.deleteOne({ ticker: ticker.toUpperCase() });
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: "Report not found" });
+    }
+    res.json({ success: true, message: "Successfully deleted report" });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // GET: SSE stream for running research
 app.get('/api/research/stream', async (req, res) => {
   const { ticker } = req.query;

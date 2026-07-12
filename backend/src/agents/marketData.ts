@@ -6,10 +6,10 @@ export async function marketDataNode(state: typeof ResearchState.State) {
   
   const quote = await getQuote(ticker);
   
-  // Get historical data for the last 30 days
-  const date30DaysAgo = new Date();
-  date30DaysAgo.setDate(date30DaysAgo.getDate() - 30);
-  const period1 = date30DaysAgo.toISOString().split('T')[0];
+  // Get historical data for the last 365 days
+  const date365DaysAgo = new Date();
+  date365DaysAgo.setDate(date365DaysAgo.getDate() - 365);
+  const period1 = date365DaysAgo.toISOString().split('T')[0];
   const historical = await getHistoricalData(ticker, period1);
   
   const marketData = {

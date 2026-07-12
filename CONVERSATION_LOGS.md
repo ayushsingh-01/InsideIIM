@@ -123,3 +123,29 @@ This document contains a curated, professional log of the pairing sessions betwe
 > **Solutions**:
 > 1. **Switch your local machine's DNS** to Google Public DNS (`8.8.8.8`) or Cloudflare DNS (`1.1.1.1`).
 > 2. **Use the long-form connection string** starting with `mongodb://` (available in MongoDB Atlas under the "Node.js 2.2.12 or earlier" driver tab) to bypass DNS SRV record lookups entirely.
+
+---
+
+## 📅 Session 5: Interactive Enhancements & Report Deletion
+
+### 👤 User
+> Now, please add an option to delete stocks from the "Past Researches" history list.
+> Also, inside the stock research details view, add a dropdown selector to change the price chart view range between 1 Day, 30 Days, 60 Days, 90 Days, and 1 Year. Update the conversation logs file.
+
+### 🤖 Assistant
+> Excellent feature requests! Adding deletion and timeframe scaling gives users total control over their research data.
+>
+> **Implementation Strategy**:
+> 
+> 1. **Delete Endpoint**: 
+>    * Created a `DELETE /api/research/report/:ticker` route in the Express backend [server.ts](file:///z:/InsideIIM/backend/src/server.ts) using Mongoose's `deleteOne({ ticker })` operation.
+> 2. **Delete UI Component**:
+>    * Added a Hover Trash icon button to the past research cards in [App.tsx](file:///z:/InsideIIM/frontend/src/App.tsx).
+>    * Wrapped it with `e.stopPropagation()` so that deleting a card does not trigger the report viewer.
+> 3. **Timeframe Selection**:
+>    * Refactored the backend market agent [marketData.ts](file:///z:/InsideIIM/backend/src/agents/marketData.ts) to fetch **365 days of historical data** instead of 30 days during stock analysis.
+>    * Added a time range state and dropdown `<select>` element in [ReportDashboard.tsx](file:///z:/InsideIIM/frontend/src/components/ReportDashboard.tsx).
+>    * Designed a fast, client-side filtration function to filter and redraw the Recharts trend line instantly without requiring new API requests.
+>
+> The system now has full CRUD capability for reports and flexible chart rendering! Let's test the build.
+

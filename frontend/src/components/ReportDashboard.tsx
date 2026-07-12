@@ -25,6 +25,33 @@ interface ReportDashboardProps {
 export function ReportDashboard({ data }: ReportDashboardProps) {
   if (!data.finalDecision) return null;
 
+  const [timeframe, setTimeframe] = React.useState<'1d' | '30d' | '60d' | '90d' | '1y'>('30d');
+
+  const getFilteredPrices = () => {
+    const prices = data.marketData?.historicalPrices || [];
+    if (prices.length === 0) return [];
+    
+    const sorted = [...prices].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const latestDate = new Date(sorted[sorted.length - 1].date);
+    
+    if (timeframe === '1d') {
+      return sorted.slice(-2);
+    }
+    
+    let daysToSubtract = 30;
+    if (timeframe === '30d') daysToSubtract = 30;
+    else if (timeframe === '60d') daysToSubtract = 60;
+    else if (timeframe === '90d') daysToSubtract = 90;
+    else if (timeframe === '1y') daysToSubtract = 365;
+    
+    const cutoffDate = new Date(latestDate);
+    cutoffDate.setDate(latestDate.getDate() - daysToSubtract);
+    
+    return sorted.filter(p => new Date(p.date) >= cutoffDate);
+  };
+  
+  const filteredPrices = getFilteredPrices();
+
   const decisionColor = 
     data.finalDecision.recommendation === 'INVEST' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
     data.finalDecision.recommendation === 'WATCHLIST' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
@@ -69,13 +96,24 @@ export function ReportDashboard({ data }: ReportDashboardProps) {
 
         {/* Price Chart */}
         <Card className="md:col-span-2 bg-black/40 backdrop-blur-md border-white/10">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><TrendingUp className="w-4 h-4 text-green-400" /> Price Action (30 Days)</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="flex items-center gap-2"><TrendingUp className="w-4 h-4 text-green-400" /> Price Action</CardTitle>
+            <select
+              value={timeframe}
+              onChange={(e) => setTimeframe(e.target.value as any)}
+              className="bg-neutral-900 border border-white/10 text-white rounded-md px-2 py-1 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
+            >
+              <option value="1d">1 Day</option>
+              <option value="30d">30 Days</option>
+              <option value="60d">60 Days</option>
+              <option value="90d">90 Days</option>
+              <option value="1y">1 Year</option>
+            </select>
           </CardHeader>
           <CardContent className="h-[250px] w-full">
-            {data.marketData?.historicalPrices && data.marketData.historicalPrices.length > 0 ? (
+            {filteredPrices && filteredPrices.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={data.marketData.historicalPrices}>
+                <LineChart data={filteredPrices}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
                     <XAxis dataKey="date" tickFormatter={(v) => new Date(v).toLocaleDateString(undefined, {month:'short', day:'numeric'})} stroke="#ffffff50" />
                     <YAxis domain={['auto', 'auto']} stroke="#ffffff50" />

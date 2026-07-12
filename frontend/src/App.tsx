@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Search, TrendingUp, Sparkles, History, Clock, FileText, ArrowRight } from "lucide-react";
+import { Search, TrendingUp, Sparkles, History, Clock, FileText, ArrowRight, Trash2 } from "lucide-react";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { LoadingUI } from "./components/LoadingUI";
@@ -107,6 +107,30 @@ export default function App() {
     }
   };
 
+  const handleDeleteReport = async (e: React.MouseEvent, tickerToDelete: string) => {
+    e.stopPropagation();
+    if (!window.confirm(`Are you sure you want to delete the research report for ${tickerToDelete}?`)) {
+      return;
+    }
+    try {
+      const res = await fetch(`${API_URL}/api/research/report/${encodeURIComponent(tickerToDelete)}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        fetchHistory();
+        if (reportData?.ticker === tickerToDelete) {
+          setStatus("idle");
+          setReportData(null);
+        }
+      } else {
+        alert("Failed to delete the report.");
+      }
+    } catch (err) {
+      console.error("Error deleting report:", err);
+      alert("An error occurred while deleting the report.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-neutral-950 text-white relative overflow-hidden font-sans pb-24">
       {/* Background gradients */}
@@ -203,9 +227,18 @@ export default function App() {
                             <span>{new Date(item.createdAt).toLocaleDateString()}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 text-blue-400 text-sm opacity-60 group-hover:opacity-100 transition-opacity">
-                          <span>View Report</span>
-                          <ArrowRight className="w-4 h-4" />
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-2 text-blue-400 text-sm opacity-60 group-hover:opacity-100 transition-opacity">
+                            <span>View Report</span>
+                            <ArrowRight className="w-4 h-4" />
+                          </div>
+                          <button
+                            onClick={(e) => handleDeleteReport(e, item.ticker)}
+                            className="p-1.5 rounded-lg text-gray-500 hover:text-red-500 hover:bg-white/5 opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
+                            title="Delete Report"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       </div>
                     );
