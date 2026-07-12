@@ -159,3 +159,10 @@ This application uses a **split-deployment architecture** for production environ
 2. **Advanced Financial Calculations**: Incorporate real Discounted Cash Flow (DCF) calculators by pulling full balance sheets and cash flow statement arrays from the financial APIs.
 3. **Conversational Interface**: Implement an interactive chat box next to the dashboard, allowing users to converse with the agents directly (e.g., *"Why did the news sentiment score decrease?"*).
 4. **User Portfolios**: Add user authentication (JWT) to allow analysts to save portfolios and set alert metrics for automated re-evaluations.
+
+---
+
+## 🎁 LLM Chat Session Transcript & Logs
+
+As part of this build, the entire process was done in partnership with an LLM (Antigravity). For insight into the design decisions, troubleshooting of the Vercel compilation peer dependencies, and deployment strategy, you can review the full chronological logs here:
+* [CONVERSATION_LOGS.md](file:///z:/InsideIIM/CONVERSATION_LOGS.md)
