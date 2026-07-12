@@ -14,33 +14,53 @@ InvestAI automates equity research by querying multi-perspective stock data and 
 
 ---
 
-## How to Run It
+## How to Run Locally
+
+Follow these step-by-step instructions to get the application running on your local machine.
 
 ### 1. Prerequisites
-Ensure you have **Node.js (v18+)** and **MongoDB** installed (either running locally or an Atlas URI).
+Ensure you have the following installed on your machine:
+* **Node.js** (v18 or higher recommended)
+* **MongoDB** (either MongoDB Community Server running locally on port `27017` or a MongoDB Atlas connection string)
+* **Git** (to clone the repository)
 
-### 2. Environment Setup
-Create a `.env` file in the root directory:
+### 2. Clone the Repository
+Clone this repository to your local machine and navigate into the root directory:
+```bash
+git clone https://github.com/ayushsingh-01/InsideIIM.git
+cd InsideIIM
+```
+
+### 3. Set Up Environment Variables
+Create a file named `.env` in the **root directory** of the project and add your API keys:
 ```env
-GOOGLE_GENAI_API_KEY=your_gemini_api_key
-TAVILY_API_KEY=your_tavily_api_key
+# LLM API Keys
+GOOGLE_GENAI_API_KEY=your_gemini_api_key_here
+GOOGLE_API_KEY=your_gemini_api_key_here
 
-# Optional: MongoDB connection (defaults to local if omitted)
+# Search API Key (Tavily is required for news/web searches)
+TAVILY_API_KEY=your_tavily_api_key_here
+
+# MongoDB Connection String
+# Defaults to your local database if left as is, or replace with your MongoDB Atlas URI
 MONGODB_URI=mongodb://127.0.0.1:27017/investai
 ```
 
-### 3. Install Workspace Dependencies
-From the root directory, run the helper command to install dependencies for the root, backend, and frontend concurrently:
+### 4. Install Dependencies
+This project uses a monorepo setup. You can install all dependencies for the root, backend, and frontend concurrently by running the following command from the project root:
 ```bash
 npm run install-all
 ```
 
-### 4. Run the Dev Servers
-Start both the Express backend (`port 5001`) and Vite frontend (`port 3000`) concurrently:
+### 5. Start the Development Servers
+Start both the Express backend server (running on port `5001`) and the Vite React frontend client (running on port `3000`) concurrently:
 ```bash
 npm run dev
 ```
-Open **[http://localhost:3000](http://localhost:3000)** in your browser.
+
+Once started:
+* Open your browser and navigate to **[http://localhost:3000](http://localhost:3000)** to view the application.
+* The frontend will proxy all `/api/*` calls to the backend running at `http://localhost:5001`.
 
 ---
 
@@ -89,10 +109,29 @@ Each node executes sequentially and appends findings to the shared graph state:
 
 ## Key Decisions & Trade-offs
 
-* **Decoupled Express + Vite SPA instead of Next.js**: Migrated from Next.js to React + Vite. This isolates browser code from Node.js dependencies, resolves package versioning conflicts with third-party libraries (like LangChain and Yahoo Finance), avoids Turbopack compiler bugs, and yields an ultra-fast client-side single page app.
+* **Decoupled Express + Vite SPA**: This isolates browser code from Node.js dependencies, resolves package versioning conflicts with third-party libraries (like LangChain and Yahoo Finance), and yields an ultra-fast client-side single page app.
 * **Server-Sent Events (SSE) for Real-Time Streaming**: Standard SSE GET requests were chosen over WebSockets because research is unidirectional (server-to-client progress streaming). It is lighter, native to browsers, and easier to scale.
 * **MongoDB Mongoose Schema Caching**: Rather than calling LLM and Search APIs repeatedly (which incurs latency and token costs), completed reports are cached. Users can load previous reports instantly from the dashboard homepage.
 * **Offline Fallback Database Mode**: If MongoDB is offline, the backend continues in "fallback mode" rather than crashing, executing and streaming requests without saving.
+
+---
+
+## Production Deployment
+
+This application uses a **split-deployment architecture** for production environments:
+1. **Frontend (Vercel)**: Built and hosted as a static Single Page Application.
+2. **Backend (Render/Railway/Fly.io)**: Deployed as a web service running a persistent Express instance (necessary to support Server-Sent Events and prevent Vercel's 10-second serverless timeout).
+
+### 1. Deploying the Backend (e.g., Render)
+* Set the **Root Directory** to `backend`.
+* Set the build command to `npm install && npm run build`.
+* Set the start command to `npm start`.
+* Add environment variables for `MONGODB_URI`, `GOOGLE_GENAI_API_KEY`, and `TAVILY_API_KEY`.
+
+### 2. Deploying the Frontend (Vercel)
+* Set the **Root Directory** to `frontend`.
+* Add the environment variable `VITE_API_URL` pointing to your deployed backend URL (e.g., `https://your-backend.onrender.com`).
+* The project includes a `frontend/.npmrc` file configured with `legacy-peer-deps=true` to automatically bypass React 19 peer dependency conflicts during Vercel's build process.
 
 ---
 
